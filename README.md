@@ -1,20 +1,36 @@
-# Agnes 的财富自由计算器 · Compound Interest Calculator
+# 财富自由计算器 · Compound Interest Calculator
 
-一个纯前端的复利计算器，单个 `index.html` 即可运行。
+一个**单文件、纯前端**的复利计算小工具：整个工具就是一个 `index.html`，双击就能用，不联网、不上传、不装任何东西。
 
-## 功能 Features
+## 📥 下载
 
-- 初始金额 / 每年追加投入 / 年利率 / 年数 / 复利频率 可调
-- 堆叠柱状图展示 本金 + 追加 + 往年利息 + 当年利息（金色）
-- 指标卡片：最终金额、总投入、利息收益、增长倍数、末年每年利息
-- 支持查询任意一年的利息
-- 里程碑提示：利息超过累计本金 / 当年利息超过年投入的年份
-- 支持 CNY / USD / EUR
+👉 [点我直接下载（ZIP，解压后双击 index.html 即可使用）](https://github.com/Agnes-studio/compound-interest-calculator/archive/refs/heads/main.zip)
 
-## 本地运行
+只要单个 HTML 文件？打开 [index.html](https://github.com/Agnes-studio/compound-interest-calculator/blob/main/index.html)，点页面**右上角的下载按钮**（⬇ Download raw file）即可。
 
-直接用浏览器打开 `index.html` 即可。
+## ✨ 特点
 
-## 收款码图片
+- **完全离线**：所有计算都在浏览器本地完成，数据不会离开你的电脑
+- **单文件**：只有一个 `index.html`，拷走就能用，无需安装、无需依赖
+- **五参数可调**：初始金额、每年追加投入、年利率、年数、复利频率（年/季/月/日）
+- **四层堆叠柱状图**：本金 / 累计追加 / 往年利息 / **当年利息（金色高亮）**，每年新长的利息一目了然
+- **关键指标卡片**：最终金额、总投入本金、利息收益、增长倍数、末年每年利息
+- **按年查询利息**：输入任意年份，直接显示当年利息金额
+- **里程碑提示**：自动算出"利息超过累计本金"和"当年利息超过年投入（钱替你工作）"两个节点
+- **多币种**：支持 ¥ CNY / $ USD / € EUR，中文金额自动以"万/亿"显示
 
-页面底部打赏区的 `wechat-pay.png` 和 `alipay.png` 未包含在仓库中（收款信息不宜公开）。如需部署公开版本，请自行替换或删除打赏区块。
+## 🔀 计算逻辑
+
+| 项目 | 说明 |
+|---|---|
+| 复利公式 | A = P(1+r/n)^(nt) + C×[(1+r/n)^(nt)−1]/[(1+r/n)^n−1] |
+| 年投入计入 | 每年末计入 Annual contributions at year-end |
+| 当年利息 | 当年本息和 − 上年本息和 − 当年追加投入 |
+
+## 📄 License
+
+MIT
+
+---
+
+> 打赏区块引用的 `wechat-pay.png` / `alipay.png` 未包含在仓库中，如需可自行添加或删除该区块。
