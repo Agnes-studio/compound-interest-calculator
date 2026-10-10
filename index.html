@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agnes的财富自由计算器 · Compound Interest Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1a1a18;--ink-2:#4a4a46;--ink-3:#8a8a84;--paper:#faf9f6;--paper-2:#f0ede6;--paper-3:#e8e4db;--gold:#b8973a;--gold-light:#f5ecd2;--green:#2a6b44;--radius:12px}
+body{font-family:'DM Mono',monospace;background:var(--paper);color:var(--ink);min-height:100vh}
+header{border-bottom:1px solid var(--paper-3);padding:2.5rem 2rem 2rem;max-width:780px;margin:0 auto}
+.site-label{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.5rem}
+h1{font-family:'Noto Serif SC',serif;font-size:clamp(1.4rem,4vw,2.1rem);font-weight:600;line-height:1.3}
+h1 span{color:var(--gold)}
+.h1-en{font-family:'DM Mono',monospace;font-size:clamp(.8rem,2vw,1rem);color:var(--ink-3);font-weight:400;margin-top:4px;display:block}
+main{max-width:780px;margin:0 auto;padding:2rem}
+.top-controls{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;flex-wrap:wrap}
+.currency-label{font-size:11px;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+.currency-select{padding:6px 12px;font-family:'DM Mono',monospace;font-size:13px;background:var(--paper);border:1px solid var(--paper-3);border-radius:8px;color:var(--ink);cursor:pointer;outline:none}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem 2rem;margin-bottom:1.5rem}
+@media(max-width:520px){.controls{grid-template-columns:1fr}}
+.control-group label{display:block;margin-bottom:8px}
+.lbl-zh{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.lbl-en{font-size:10px;color:var(--ink-3);opacity:.7}
+.slider-row{display:flex;align-items:center;gap:10px}
+.slider-row input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:var(--paper-3);border-radius:2px;outline:none;cursor:pointer}
+.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ink);cursor:pointer}
+.slider-val{font-size:13px;font-weight:500;min-width:90px;text-align:right}
+.num-input{width:80px;padding:4px 8px;font-family:"DM Mono",monospace;font-size:13px;font-weight:500;background:var(--paper);border:1px solid var(--paper-3);border-radius:6px;color:var(--ink);outline:none;text-align:right;-moz-appearance:textfield}
+.num-input:focus{border-color:var(--ink-2)}
+.num-input::-webkit-outer-spin-button,.num-input::-webkit-inner-spin-button{-webkit-appearance:none}
+select{width:100%;padding:8px 12px;font-family:'DM Mono',monospace;font-size:13px;background:var(--paper);border:1px solid var(--paper-3);border-radius:8px;color:var(--ink);cursor:pointer;outline:none}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-bottom:1.5rem}
+@media(max-width:760px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.q-row{display:flex;align-items:center;gap:6px;margin:6px 0}
+.q-row .num-input{width:64px}
+.metric{background:var(--paper-2);border-radius:var(--radius);padding:1rem .875rem}
+.metric-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+.metric-label-en{font-size:9px;color:var(--ink-3);opacity:.6;margin-bottom:6px}
+.metric-value{font-size:15px;font-weight:500}
+.metric-value.positive{color:var(--green)}
+.chart-legend{display:flex;gap:1rem;margin-bottom:10px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3)}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.chart-wrap{position:relative;width:100%;height:280px}
+.milestone{font-size:12px;color:var(--ink-2);margin-top:.75rem;line-height:1.7}
+.milestone b{color:var(--gold)}
+.formula{font-size:11px;color:var(--ink-3);margin-top:1rem;line-height:1.6}
+.divider{border:none;border-top:1px solid var(--paper-3);margin:2.5rem 0}
+.support-section{text-align:center;padding:2rem 0}
+.support-title{font-family:'Noto Serif SC',serif;font-size:1.3rem;font-weight:600;margin-bottom:4px}
+.support-title-en{font-size:.85rem;color:var(--ink-3);margin-bottom:.5rem}
+.support-desc{font-size:13px;color:var(--ink-2);line-height:1.7;max-width:460px;margin:0 auto 2rem}
+.qr-grid{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.qr-card{display:flex;flex-direction:column;align-items:center;gap:.75rem}
+.qr-img{width:160px;height:160px;object-fit:contain;background:#fff;padding:10px;border-radius:var(--radius);border:1px solid var(--paper-3)}
+.qr-label{font-size:11px;letter-spacing:.1em;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;gap:4px}
+.qr-label-main{display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%}
+.qr-label-en{font-size:10px;opacity:.6}
+.kofi-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--gold-light);color:var(--ink);font-family:'DM Mono',monospace;font-size:13px;font-weight:500;text-decoration:none;border-radius:100px;border:1px solid var(--gold);transition:background .2s,transform .1s}
+.kofi-btn:hover{background:#ecddb5;transform:translateY(-1px)}
+.kofi-btn-en{display:block;font-size:10px;color:var(--ink-3);margin-top:8px}
+footer{border-top:1px solid var(--paper-3);padding:1.5rem 2rem;text-align:center;font-size:11px;color:var(--ink-3);max-width:780px;margin:0 auto;line-height:1.8}
+</style>
+</head>
+<body>
+<header>
+  <p class="site-label">财富工具 <span style="opacity:.6">/ Financial Tool</span></p>
+  <h1>Agnes的<span>财富自由</span>计算器</h1>
+  <span class="h1-en">Agnes's Compound Interest Calculator</span>
+</header>
+<main>
+  <div class="top-controls">
+    <span class="currency-label">货币 Currency:</span>
+    <select class="currency-select" id="currency" onchange="calc()">
+      <option value="CNY">¥ 人民币 CNY</option>
+      <option value="USD">$ 美元 USD</option>
+      <option value="EUR">€ 欧元 EUR</option>
+    </select>
+  </div>
+  <div class="controls">
+    <div class="control-group">
+      <label><span class="lbl-zh">初始金额</span> <span class="lbl-en">/ Initial Amount</span></label>
+      <div class="slider-row">
+        <input type="range" id="principal" min="0" max="5000000" step="1000" value="100000">
+        <input type="number" class="num-input" id="p-num" min="0" max="5000000" step="1000" value="100000">
+      </div>
+    </div>
+    <div class="control-group">
+      <label><span class="lbl-zh">每年追加投入</span> <span class="lbl-en">/ Annual Contribution</span></label>
+      <div class="slider-row">
+        <input type="range" id="contrib" min="0" max="500000" step="1000" value="12000">
+        <input type="number" class="num-input" id="c-num" min="0" max="5000000" step="1000" value="12000">
+      </div>
+    </div>
+    <div class="control-group">
+      <label><span class="lbl-zh">年利率</span> <span class="lbl-en">/ Annual Interest Rate</span></label>
+      <div class="slider-row">
+        <input type="range" id="rate" min="1" max="20" step="0.5" value="8">
+        <input type="number" class="num-input" id="r-num" min="1" max="20" step="0.5" value="8" style="width:60px">
+        <span style="font-size:13px;color:var(--ink-3)">%</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label><span class="lbl-zh">年数</span> <span class="lbl-en">/ Years</span></label>
+      <div class="slider-row">
+        <input type="range" id="years" min="1" max="40" step="1" value="20">
+        <input type="number" class="num-input" id="y-num" min="1" max="40" step="1" value="20" style="width:60px">
+        <span style="font-size:13px;color:var(--ink-3)">年</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label><span class="lbl-zh">复利频率</span> <span class="lbl-en">/ Compounding</span></label>
+      <select id="freq">
+        <option value="1">每年 / Annually</option>
+        <option value="4">每季度 / Quarterly</option>
+        <option value="12" selected>每月 / Monthly</option>
+        <option value="365">每天 / Daily</option>
+      </select>
+    </div>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">最终金额</div><div class="metric-label-en">Final Value</div><div class="metric-value" id="final">—</div></div>
+    <div class="metric"><div class="metric-label">总投入本金</div><div class="metric-label-en">Total Invested</div><div class="metric-value" id="total-inv">—</div></div>
+    <div class="metric"><div class="metric-label">利息收益</div><div class="metric-label-en">Interest Earned</div><div class="metric-value positive" id="interest">—</div></div>
+    <div class="metric"><div class="metric-label">增长倍数</div><div class="metric-label-en">Growth Multiple</div><div class="metric-value" id="multiplier">—</div></div>
+    <div class="metric"><div class="metric-label" id="ann-int-label">末年每年利息</div><div class="metric-label-en">Annual Interest (Final Yr)</div><div class="metric-value positive" id="ann-int">—</div></div>
+    <div class="metric"><div class="metric-label">查询某年利息</div><div class="metric-label-en">Interest by Year</div><div class="q-row"><input type="number" class="num-input" id="q-y" min="1" max="40" step="1" value="10"><span style="font-size:12px;color:var(--ink-3)">年</span></div><div class="metric-value positive" id="q-int">—</div></div>
+  </div>
+  <div class="chart-legend">
+    <span class="legend-item"><span class="legend-dot" style="background:#2a6b44"></span>利息 Interest</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#7db8a0"></span>追加 Contributions</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#c8ddd5"></span>本金 Principal</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#b8973a"></span>当年利息 Annual Interest</span>
+  </div>
+  <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  <p class="milestone" id="milestone"></p>
+  <p class="formula">公式 Formula: A = P(1+r/n)^(nt) + C×[(1+r/n)^(nt)−1]/[(1+r/n)^n−1] | 年投入在每年末计入 Annual contributions at year-end</p>
+  <hr class="divider">
+  <section class="support-section">
+    <h2 class="support-title">支持我</h2>
+    <p class="support-title-en">Support Me</p>
+    <p class="support-desc">如果您喜欢这个工具，可以通过打赏（金额不限）来支持我，谢谢您！<br><span style="font-size:12px;opacity:.8">If you find this tool helpful, feel free to support me with any amount. Thank you!</span></p>
+    <div class="qr-grid">
+      <div class="qr-card">
+        <img class="qr-img" src="wechat-pay.png" alt="微信收款码">
+        <div class="qr-label"><span class="qr-label-main"><span class="dot" style="background:#07C160"></span>微信支付</span><span class="qr-label-en">WeChat Pay</span></div>
+      </div>
+      <div class="qr-card">
+        <img class="qr-img" src="alipay.png" alt="支付宝收款码">
+        <div class="qr-label"><span class="qr-label-main"><span class="dot" style="background:#1677FF"></span>支付宝</span><span class="qr-label-en">Alipay</span></div>
+      </div>
+    </div>
+    <a class="kofi-btn" href="https://ko-fi.com/agnesxie" target="_blank" rel="noopener">☕ 海外打赏 · Support via Ko-fi</a>
+    <span class="kofi-btn-en">Credit card / PayPal accepted · ko-fi.com/agnesxie</span>
+  </section>
+</main>
+<footer>© Agnes · 财富自由计算器 · Compound Interest Calculator<br>仅供参考，不构成投资建议 · For reference only, not financial advice</footer>
+<script>
+const SYMBOLS={'CNY':'¥','USD':'$','EUR':'€'};
+function sym(){return SYMBOLS[document.getElementById('currency').value]||'¥'}
+function fmt(v){const s=sym(),n=Math.round(v);if(s==='¥'){if(n>=100000000)return s+(n/100000000).toFixed(2)+'亿';if(n>=10000)return s+(n/10000).toFixed(1)+'万';}return s+n.toLocaleString()}
+let chart;
+function calcFV(P,C,r,n,y){if(y===0)return P;const nt=n*y,gf=Math.pow(1+r/n,nt),af=Math.pow(1+r/n,n);return P*gf+(Math.abs(af-1)<1e-10?C*y:C*(gf-1)/(af-1))}
+function calc(){
+  const P=+document.getElementById('principal').value;
+  const C=+document.getElementById('contrib').value;
+  const r=+document.getElementById('rate').value/100;
+  const Y=+document.getElementById('years').value;
+  const n=+document.getElementById('freq').value;
+  const s=sym();
+  const labels=[],pL=[],cL=[],iL=[],aL=[0],piL=[0];
+  for(let y=0;y<=Y;y++){labels.push(y===0?'现在 Now':y+'yr');const fv=calcFV(P,C,r,n,y),inv=P+C*y;pL.push(Math.round(P));cL.push(Math.round(C*y));iL.push(Math.max(0,Math.round(fv-inv)));if(y>0){aL.push(Math.max(0,Math.round(fv-calcFV(P,C,r,n,y-1)-C)));piL.push(Math.max(0,iL[y]-aL[y]))}}
+  const fv=pL[Y]+cL[Y]+iL[Y],ti=pL[Y]+cL[Y];
+  document.getElementById('final').textContent=fmt(fv);
+  document.getElementById('total-inv').textContent=fmt(ti);
+  document.getElementById('interest').textContent=fmt(iL[Y]);
+  document.getElementById('multiplier').textContent=ti>0?(fv/ti).toFixed(2)+'×':'—';
+  document.getElementById('ann-int-label').textContent='第'+Y+'年利息';
+  document.getElementById('ann-int').textContent=fmt(aL[Y]);
+  const qyEl=document.getElementById('q-y');qyEl.max=Y;
+  let qy=parseInt(qyEl.value);if(isNaN(qy)||qy<1)qy=1;if(qy>Y){qy=Y;qyEl.value=Y}
+  document.getElementById('q-int').textContent='第'+qy+'年: '+fmt(aL[qy]);
+  const ms=document.getElementById('milestone');
+  let html='';
+  if(ti>0){const yd=iL.findIndex((v,y)=>y>0&&v>=(P+C*y));if(yd>0)html+='📈 第 <b>'+yd+'</b> 年利息超过累计本金 · Total interest exceeds principal in year <b>'+yd+'</b><br>'}
+  if(C>0){const yc=aL.findIndex((v,y)=>y>0&&v>=C);if(yc>0)html+='☕ 第 <b>'+yc+'</b> 年当年利息超过年投入（"钱替你工作"节点）· Annual interest exceeds yearly contribution in year <b>'+yc+'</b>';else if(Y>=1)html+='☕ 在 '+Y+' 年内，当年利息尚未超过年投入 · Annual interest has not yet exceeded yearly contribution within '+Y+' years'}
+  ms.innerHTML=html;
+  if(chart)chart.destroy();
+  chart=new Chart(document.getElementById('chart'),{type:'bar',data:{labels,datasets:[{label:'本金 Principal',data:pL,backgroundColor:'#c8ddd5',stack:'s'},{label:'追加 Contributions',data:cL,backgroundColor:'#7db8a0',stack:'s'},{label:'利息 Interest',data:piL,backgroundColor:'#2a6b44',stack:'s'},{label:'当年利息 Annual Interest',data:aL,backgroundColor:'#b8973a',stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),footer:items=>'合计 Total: '+fmt(items.reduce((s,i)=>s+i.raw,0))}}},scales:{x:{stacked:true,ticks:{autoSkip:true,maxTicksLimit:11,font:{size:11}},grid:{display:false}},y:{stacked:true,ticks:{font:{size:11},callback:v=>fmt(v)},grid:{color:'rgba(0,0,0,0.06)'}}}}})};
+// Slider -> input sync
+function syncToInput(sliderId, inputId, isAmount) {
+  const slider = document.getElementById(sliderId);
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  slider.addEventListener('input', () => { input.value = slider.value; calc(); });
+  input.addEventListener('input', () => {
+    let v = parseFloat(input.value);
+    if (isNaN(v)) return;
+    v = Math.min(Math.max(v, +slider.min), +slider.max);
+    slider.value = v;
+    input.value = v;
+    calc();
+  });
+  input.addEventListener('blur', () => {
+    let v = parseFloat(input.value);
+    if (isNaN(v) || v < +slider.min) { input.value = slider.min; slider.value = slider.min; }
+    else if (v > +slider.max) { input.value = slider.max; slider.value = slider.max; }
+    calc();
+  });
+}
+syncToInput('principal','p-num',true);
+syncToInput('contrib','c-num',true);
+syncToInput('rate','r-num',false);
+syncToInput('years','y-num',false);
+document.getElementById('freq').addEventListener('change', calc);
+document.getElementById('q-y').addEventListener('input', calc);
+
+calc();
+</script>
+</body>
+</html>
