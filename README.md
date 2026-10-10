@@ -31,10 +31,13 @@
 | 年投入计入 | 每年末计入 Annual contributions at year-end |
 | 当年利息 | 当年本息和 − 上年本息和 − 当年追加投入 |
 
+## 💖 支持作者
+
+如果这个工具对你有帮助，可以请作者喝杯咖啡：
+
+- ⚡ [爱发电](https://afdian.com/a/Agnesxie)（微信 / 支付宝）
+- ☕ [Ko-fi](https://ko-fi.com/agnesxie)（信用卡 / PayPal）
+
 ## 📄 License
 
 MIT
-
----
-
-> 打赏区块引用的 `wechat-pay.png` / `alipay.png` 未包含在仓库中，如需可自行添加或删除该区块。
