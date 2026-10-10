@@ -2,6 +2,10 @@
 
 一个**单文件、纯前端**的复利计算小工具：整个工具就是一个 `index.html`，双击就能用，不联网、不上传、不装任何东西。
 
+## 🚀 在线使用
+
+👉 **[agnes-calculator.netlify.app](https://agnes-calculator.netlify.app)** — 点开即用，无需下载
+
 ## 📥 下载
 
 👉 [点我直接下载（ZIP，解压后双击 index.html 即可使用）](https://github.com/Agnes-studio/compound-interest-calculator/archive/refs/heads/main.zip)
